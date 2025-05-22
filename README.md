@@ -6,6 +6,8 @@ The project was inspired by M5stics and Flipper Zero.
 Also, as part of the project, I developed 3D models of the case for the minimum configuration of the device.
 The device is based on the milk-in duo board.
 ## Used components: 
-*milk-in the duo
-*240-by-240-point TFT display
+* milk-in the duo
+  
+* 240-by-240-point TFT display
+  
 This is at the time of the current device configuration
