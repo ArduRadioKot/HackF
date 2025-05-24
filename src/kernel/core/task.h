@@ -1,39 +1,74 @@
-// task_scheduler.h
 #pragma once
 
-#define MAX_TASKS 4
+#define MAX_TASKS 8  
+
 typedef void (*TaskFunc)();
 
 class TaskScheduler {
 private:
-    TaskFunc tasks[MAX_TASKS];
+    struct Task {
+        TaskFunc function;
+        String name;
+        bool active;
+    };
+    
+    Task tasks[MAX_TASKS];
     int taskCount;
-    int taskNameCnt;
     int currentTask;
-    String taskName[MAX_TASKS];
 
 public:
-    TaskScheduler() : taskCount(0), currentTask(0) {}
-
-    void addTask(TaskFunc task, String Name) {
-        taskNameCnt++;
-        if (taskCount < MAX_TASKS) {
-            tasks[taskCount++] = task;
-            taskName[taskNameCnt] = Name;
+    TaskScheduler() : taskCount(0), currentTask(0) {
+        for (int i = 0; i < MAX_TASKS; i++) {
+            tasks[i].active = false;
         }
     }
+
+
+    void addTask(TaskFunc task, const String& name) {
+        if (taskCount < MAX_TASKS) {
+            tasks[taskCount].function = task;
+            tasks[taskCount].name = name;
+            tasks[taskCount].active = true;
+            taskCount++;
+        }
+    }
+
+
+    String getTaskName(int index) {
+        if (index >= 0 && index < taskCount) {
+            return tasks[index].name;
+        }
+        return "Invalid";
+    }
+
+
+    void endTask(int index) {
+        if (index >= 0 && index < taskCount) {
+            tasks[index].active = false;
+        }
+    }
+
 
     void run() {
-        while (true) {
-            tasks[currentTask]();
+        if (taskCount == 0) return;
+        
+
+        do {
             currentTask = (currentTask + 1) % taskCount;
+        } while (!tasks[currentTask].active && taskCount > 0);
+        
+
+        if (tasks[currentTask].active) {
+            tasks[currentTask].function();
         }
     }
 
-    String retTask(int lst){
-        return taskName[lst];  
+
+    int getActiveTaskCount() {
+        int count = 0;
+        for (int i = 0; i < taskCount; i++) {
+            if (tasks[i].active) count++;
+        }
+        return count;
     }
-
-    
 };
-
