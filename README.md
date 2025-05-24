@@ -9,5 +9,7 @@ The device is based on the milk-in duo board.
 * milk-v duo
   
 * 240x240 point TFT display
+
+* sensor button TTP223(x2)
   
 This is at the time of the current device configuration
