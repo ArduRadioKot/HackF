@@ -7,7 +7,7 @@
 
 #define BT1_PIN 21
 #define BT2_PIN 22
-#define menuItemCnt 3
+#define menuItemCnt 5
 extern TFT_eSPI tft;
 GButton bt1(BT1_PIN);
 GButton bt2(BT2_PIN);
@@ -30,6 +30,24 @@ public:
         tft.print("Task Manager  ");
     }
 
+    void BleIco(){
+        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
+        tft.setCursor(40, 80);
+        tft.print("BLE           ");
+    }
+
+    void WifiIco(){
+        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
+        tft.setCursor(40, 80);
+        tft.print("WiFi          ");
+    }
+
+    void LoraIco(){
+        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
+        tft.setCursor(40, 80);
+        tft.print("Lora          ");
+    }
+
     void ComingSoon(){
         tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
         tft.setCursor(40, 80);
@@ -44,7 +62,13 @@ public:
         switch(menuPos){
             case 0: TaskManagerIco();
                     break;
-            case 1: ComingSoon();
+            case 1: BleIco();
+                    break;
+            case 2: WifiIco();
+                    break;
+            case 3: LoraIco();
+                    break;
+            case 4: ComingSoon();
                     break;
             default: ComingSoon();
 
