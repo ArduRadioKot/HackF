@@ -37,7 +37,7 @@ public:
     }
 
     void drawMenu() {
-        tft.setCursor(0, 10);
+        tft.setCursor(0, 20);
         tft.print(menuPos);
         bt1.tick();
         bt2.tick();
@@ -49,13 +49,12 @@ public:
             default: ComingSoon();
 
                 //default: ComingSoon();
-        }
-        
-            if(bt1.isClick() && menuPos <= menuItemCnt){
+        } 
+            if(bt1.isClick() && menuPos > 0){
                 menuPos--;
                 //tft.fillScreen(0);
             }
-            if(bt2.isClick() && menuPos >= 0){
+            if(bt2.isClick() && menuPos <= menuItemCnt){
                 menuPos++;
                 //tft.fillScreen(0);
             }
