@@ -27,8 +27,8 @@ public:
     static UserInterface* instance;
 
     void setStartSetup(){
-        bt1.setType(LOW_PULL);
-        bt2.setType(LOW_PULL);
+        bt1.setType(HIGH_PULL);
+        bt2.setType(HIGH_PULL);
         bt1.setDirection(NORM_CLOSE);
         bt2.setDirection(NORM_CLOSE);
     }
@@ -70,26 +70,27 @@ public:
         if(bt1.isHolded()){
             tft.fillScreen(TFT_BLACK);
             switch(menuPos){
-            case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
-                    scheduler.endTask(0);
-                    break;
+                case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
+                        scheduler.endTask(scheduler.findIndexTask("User Interface"));
+                        break;
             }
-        }
-        switch(menuPos){
-            case 0: TaskManagerIco();
-                    break;
-            case 1: BleIco();
-                    break;
-            case 2: WifiIco();
-                    break;
-            case 3: LoraIco();
-                    break;
-            case 4: ComingSoon();
-                    break;
-            default: ComingSoon();
+        } else{
+            switch(menuPos){
+                case 0: TaskManagerIco();
+                        break;
+                case 1: BleIco();
+                        break;
+                case 2: WifiIco();
+                        break;
+                case 3: LoraIco();
+                        break;
+                case 4: ComingSoon();
+                        break;
+                default: ComingSoon();
 
-                //default: ComingSoon();
-        } 
+                    //default: ComingSoon();
+            } 
+        }
             if(bt1.isClick() && menuPos > 0){
                 menuPos--;
                 //tft.fillScreen(0);
