@@ -71,4 +71,15 @@ public:
         }
         return count;
     }
+
+    int findIndexTask(String TaskName){
+        for(int i = 0; i < getActiveTaskCount(); i++){
+            if(tasks[taskCount].name == TaskName){
+                break;
+                return i;
+            }
+            
+        }
+        return -1;
+    }
 };

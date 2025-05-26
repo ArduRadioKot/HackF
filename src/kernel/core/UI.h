@@ -4,20 +4,28 @@
 #include "Arduino.h"
 #include <TFT_eSPI.h>
 #include "GyverButton.h"
+#include "task.h"
 
 #define BT1_PIN 21
 #define BT2_PIN 22
 #define menuItemCnt 5
+
 extern TFT_eSPI tft;
+extern TaskScheduler scheduler;
 GButton bt1(BT1_PIN);
 GButton bt2(BT2_PIN);
 
 class UserInterface {
+
+    static void taskManagerWrapper();
 private:
     bool bt_state = false;
     uint8_t menuPos = 0;
+    uint8_t taskCount = 0;
 
 public:
+    static UserInterface* instance;
+
     void setStartSetup(){
         bt1.setType(LOW_PULL);
         bt2.setType(LOW_PULL);
@@ -55,10 +63,18 @@ public:
     }
 
     void drawMenu() {
-        tft.setCursor(0, 20);
-        tft.print(menuPos);
+        //tft.setCursor(0, 20);
+        //tft.print(menuPos);
         bt1.tick();
         bt2.tick();
+        if(bt1.isHolded()){
+            tft.fillScreen(TFT_BLACK);
+            switch(menuPos){
+            case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
+                    scheduler.endTask(0);
+                    break;
+            }
+        }
         switch(menuPos){
             case 0: TaskManagerIco();
                     break;
@@ -85,6 +101,22 @@ public:
             if(menuPos > menuItemCnt){menuPos = menuItemCnt;}
             if(menuPos < 0){menuPos = 0;}
     }
+
+    void taskManager(){  // task manager
+        tft.setCursor(0, 0);
+        tft.println("Task manager");
+        tft.drawFastHLine(0, 10, 240, TFT_WHITE);
+        taskCount = scheduler.getActiveTaskCount();
+        for(int i = 0; i < taskCount; i++){
+            tft.setCursor(0, i*10 + 12);
+            tft.print(scheduler.getTaskName(i));
+        }
+    }
 };
 
 #endif
+UserInterface* UserInterface::instance = nullptr;
+
+void UserInterface::taskManagerWrapper() {
+    if (instance) instance->taskManager();
+}
