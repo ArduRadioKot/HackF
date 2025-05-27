@@ -27,7 +27,7 @@ void setup() {
     tft.fillScreen(TFT_BLACK);
     tft.setTextSize(1);
     scheduler.addTask(task1, "User Interface");
-    scheduler.addTask(task2, "Counter");
+    //scheduler.addTask(task2, "Counter");
 
 }
 

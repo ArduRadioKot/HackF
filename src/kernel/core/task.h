@@ -64,8 +64,6 @@ public:
 
     void run() {
         if (taskCount == 0) return;
-        
-
         do {
             currentTask = (currentTask + 1) % taskCount;
         } while (!tasks[currentTask].active && taskCount > 0);
