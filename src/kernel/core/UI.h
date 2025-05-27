@@ -20,7 +20,8 @@ class UserInterface {
     static void taskManagerWrapper();
 private:
     bool bt_state = false;
-    uint8_t menuPos = 0;
+    int8_t menuPosUI = 0;
+    int8_t menuPosTM = 0;
     uint8_t taskCount = 0;
 
 public:
@@ -31,8 +32,8 @@ public:
         bt2.setType(HIGH_PULL);
         bt1.setDirection(NORM_CLOSE);
         bt2.setDirection(NORM_CLOSE);
-        bt1.setTimeout(700);   
-        bt2.setTimeout(700); 
+        bt1.setTimeout(1200);   
+        bt2.setTimeout(1200); 
     }
     void TaskManagerIco() {
         tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
@@ -71,13 +72,13 @@ public:
         bt2.tick();
         if(bt1.isHolded()){
             tft.fillScreen(TFT_BLACK);
-            switch(menuPos){
+            switch(menuPosUI){
                 case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
                         scheduler.endTask(scheduler.findIndexTask("User Interface"));
                         break;
             }
         } else{
-            switch(menuPos){
+            switch(menuPosUI){
                 case 0: TaskManagerIco();
                         break;
                 case 1: BleIco();
@@ -89,23 +90,26 @@ public:
                 case 4: ComingSoon();
                         break;
                 default: ComingSoon();
+                        break;
 
                     //default: ComingSoon();
             } 
         }
-            if(bt1.isClick() && menuPos > 0){
-                menuPos--;
+            if(bt1.isClick() && menuPosUI > 0){
+                menuPosUI--;
                 //tft.fillScreen(0);
             }
-            if(bt2.isClick() && menuPos <= menuItemCnt){
-                menuPos++;
+            if(bt2.isClick() && menuPosUI <= menuItemCnt){
+                menuPosUI++;
                 //tft.fillScreen(0);
             }
-            if(menuPos > menuItemCnt){menuPos = menuItemCnt;}
-            if(menuPos < 0){menuPos = 0;}
+            if(menuPosUI > menuItemCnt){menuPosUI = menuItemCnt;}
+            if(menuPosUI < 0){menuPosUI = 0;}
     }
 
     void taskManager(){  // task manager
+        bt1.tick();
+        bt2.tick();
         tft.setCursor(0, 0);
         tft.println("Task manager");
         tft.drawFastHLine(0, 10, 240, TFT_WHITE);
@@ -114,6 +118,25 @@ public:
             tft.setCursor(0, i*10 + 12);
             tft.print(scheduler.getTaskName(i));
         }
+        tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_WHITE);
+        if(bt1.isClick() && menuPosTM > 0){
+            tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
+            menuPosTM--;
+            //tft.fillScreen(0);
+        }
+        if(bt2.isClick() && menuPosTM <= taskCount){
+            tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
+            menuPosTM++;
+                //tft.fillScreen(0);
+        }
+        if(menuPosTM > taskCount - 1){menuPosTM = taskCount - 1;}
+        if(menuPosTM < 0){menuPosTM = 0;}
+
+        if(bt2.isHolded()){
+            tft.fillRect(0, 12, 200, 180, TFT_BLACK);
+            scheduler.endTask(menuPosTM);
+        }
+
     }
 };
 
