@@ -31,7 +31,8 @@ public:
         bt2.setType(HIGH_PULL);
         bt1.setDirection(NORM_CLOSE);
         bt2.setDirection(NORM_CLOSE);
-        butt1.setTimeout(700);   
+        bt1.setTimeout(700);   
+        bt2.setTimeout(700); 
     }
     void TaskManagerIco() {
         tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
