@@ -18,12 +18,13 @@ GButton bt2(BT2_PIN);
 class UserInterface {
 
     static void taskManagerWrapper();
+    static void userInterfaceWrapper();
 private:
     bool bt_state = false;
     int8_t menuPosUI = 0;
     int8_t menuPosTM = 0;
     uint8_t taskCount = 0;
-
+    String currentTask;
 public:
     static UserInterface* instance;
 
@@ -136,6 +137,11 @@ public:
             tft.fillRect(0, 12, 200, 180, TFT_BLACK);
             scheduler.endTask(menuPosTM);
         }
+        if(bt1.isHolded()){
+            tft.fillScreen(TFT_BLACK);
+            scheduler.addTask(UserInterface::userInterfaceWrapper, "User Interface");
+            scheduler.endTask(scheduler.findIndexTask("Task Manager"));
+        }
 
     }
 };
@@ -145,4 +151,8 @@ UserInterface* UserInterface::instance = nullptr;
 
 void UserInterface::taskManagerWrapper() {
     if (instance) instance->taskManager();
+}
+
+void UserInterface::userInterfaceWrapper(){
+    if (instance) instance->drawMenu();
 }
