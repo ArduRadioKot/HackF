@@ -20,6 +20,7 @@ class UserInterface {
     static void taskManagerWrapper();
     static void userInterfaceWrapper();
 private:
+    String ico[5] = {"TaskManager", "BLE", "LORA", "WIFI", "IR"};
     bool bt_state = false;
     int8_t menuPosUI = 0;
     int8_t menuPosTM = 0;
@@ -60,10 +61,10 @@ public:
         tft.print("Lora          ");
     }
 
-    void ComingSoon(){
+    void IRIco(){
         tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
         tft.setCursor(40, 80);
-        tft.print("Coming soon...");
+        tft.print("IR");
     }
 
     void drawMenu() {
@@ -71,31 +72,22 @@ public:
         //tft.print(menuPos);
         bt1.tick();
         bt2.tick();
+        tft.drawRect(200, 10 * menuPosUI + 2, 4, 4, TFT_WHITE);
         if(bt1.isHolded()){
             tft.fillScreen(TFT_BLACK);
             switch(menuPosUI){
                 case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
                         scheduler.endTask(scheduler.findIndexTask("User Interface"));
                         break;
+            
             }
-        } else{
-            switch(menuPosUI){
-                case 0: TaskManagerIco();
-                        break;
-                case 1: BleIco();
-                        break;
-                case 2: WifiIco();
-                        break;
-                case 3: LoraIco();
-                        break;
-                case 4: ComingSoon();
-                        break;
-                default: ComingSoon();
-                        break;
-
-                    //default: ComingSoon();
-            } 
         }
+        for(int i =0; i <= sizeof(ico); i++){
+            tft.setCursor(0, i * 10);
+            tft.print(ico[i]);
+
+        }
+
             if(bt1.isClick() && menuPosUI > 0){
                 menuPosUI--;
                 //tft.fillScreen(0);
@@ -104,6 +96,7 @@ public:
                 menuPosUI++;
                 //tft.fillScreen(0);
             }
+
             if(menuPosUI > menuItemCnt){menuPosUI = menuItemCnt;}
             if(menuPosUI < 0){menuPosUI = 0;}
     }
