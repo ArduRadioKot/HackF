@@ -8,7 +8,7 @@
 
 #define BT1_PIN 21
 #define BT2_PIN 22
-#define menuItemCnt 5
+
 
 extern TFT_eSPI tft;
 extern TaskScheduler scheduler;
@@ -24,6 +24,7 @@ private:
     int8_t menuPosUI = 0;
     int8_t menuPosTM = 0;
     uint8_t taskCount = 0;
+    String ico[7] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
     String currentTask;
 public:
     static UserInterface* instance;
@@ -35,35 +36,6 @@ public:
         bt2.setDirection(NORM_CLOSE);
         bt1.setTimeout(1200);   
         bt2.setTimeout(1200); 
-    }
-    void TaskManagerIco() {
-        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
-        tft.setCursor(40, 80);
-        tft.print("Task Manager  ");
-    }
-
-    void BleIco(){
-        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
-        tft.setCursor(40, 80);
-        tft.print("BLE           ");
-    }
-
-    void WifiIco(){
-        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
-        tft.setCursor(40, 80);
-        tft.print("WiFi          ");
-    }
-
-    void LoraIco(){
-        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
-        tft.setCursor(40, 80);
-        tft.print("Lora          ");
-    }
-
-    void ComingSoon(){
-        tft.drawRoundRect(30, 70, 180, 140, 10, TFT_WHITE);
-        tft.setCursor(40, 80);
-        tft.print("Coming soon...");
     }
 
     void drawMenu() {
@@ -79,32 +51,25 @@ public:
                         break;
             }
         } else{
-            switch(menuPosUI){
-                case 0: TaskManagerIco();
-                        break;
-                case 1: BleIco();
-                        break;
-                case 2: WifiIco();
-                        break;
-                case 3: LoraIco();
-                        break;
-                case 4: ComingSoon();
-                        break;
-                default: ComingSoon();
-                        break;
-
-                    //default: ComingSoon();
-            } 
+            for(int i = 0; i <= sizeof(ico) - 1; i++){
+                tft.setCursor(0, i * 10);
+                tft.print(ico[i]);
+            }
+        
         }
+        // вроде как надо чинить 
+        tft.drawRect(225, menuPosUI * 10 + 2, 5, 5, TFT_WHITE);
             if(bt1.isClick() && menuPosUI > 0){
+                tft.drawRect(225, menuPosUI * 10, 5, 5, TFT_BLACK);
                 menuPosUI--;
                 //tft.fillScreen(0);
             }
-            if(bt2.isClick() && menuPosUI <= menuItemCnt){
+            if(bt2.isClick() && menuPosUI <= sizeof(ico) - 1){
+                tft.drawRect(225, menuPosUI * 10, 5, 5, TFT_BLACK);
                 menuPosUI++;
                 //tft.fillScreen(0);
             }
-            if(menuPosUI > menuItemCnt){menuPosUI = menuItemCnt;}
+            if(menuPosUI > sizeof(ico)- 1 ){menuPosUI = sizeof(ico) - 1;}
             if(menuPosUI < 0){menuPosUI = 0;}
     }
 
