@@ -8,7 +8,7 @@
 
 #define BT1_PIN 21
 #define BT2_PIN 22
-
+#define MenuItem 7
 
 extern TFT_eSPI tft;
 extern TaskScheduler scheduler;
@@ -24,7 +24,7 @@ private:
     int8_t menuPosUI = 0;
     int8_t menuPosTM = 0;
     uint8_t taskCount = 0;
-    String ico[7] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
+    String ico[MenuItem] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
     String currentTask;
 public:
     static UserInterface* instance;
@@ -57,19 +57,19 @@ public:
             }
         
         }
-        // вроде как надо чинить 
-        tft.drawRect(225, menuPosUI * 10 + 2, 5, 5, TFT_WHITE);
+ 
+        tft.drawRect(15 + (ico[menuPosUI].length() * 6), menuPosUI * 10 + 2, 5, 5, TFT_WHITE);
             if(bt1.isClick() && menuPosUI > 0){
-                tft.drawRect(225, menuPosUI * 10, 5, 5, TFT_BLACK);
+                tft.drawRect(15 + (ico[menuPosUI].length() * 6), menuPosUI * 10 + 2, 5, 5, TFT_BLACK);
                 menuPosUI--;
                 //tft.fillScreen(0);
             }
-            if(bt2.isClick() && menuPosUI <= sizeof(ico) - 1){
-                tft.drawRect(225, menuPosUI * 10, 5, 5, TFT_BLACK);
+            if(bt2.isClick() && menuPosUI <= MenuItem - 1){
+                tft.drawRect(15 + (ico[menuPosUI].length() * 6), menuPosUI * 10 + 2, 5, 5, TFT_BLACK);
                 menuPosUI++;
                 //tft.fillScreen(0);
             }
-            if(menuPosUI > sizeof(ico)- 1 ){menuPosUI = sizeof(ico) - 1;}
+            if(menuPosUI > MenuItem- 1 ){menuPosUI = MenuItem - 1;}
             if(menuPosUI < 0){menuPosUI = 0;}
     }
 
@@ -84,14 +84,14 @@ public:
             tft.setCursor(0, i*10 + 12);
             tft.print(scheduler.getTaskName(i));
         }
-        tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_WHITE);
+        tft.drawRect(15 + (scheduler.getTaskName(menuPosTM).length() * 6), menuPosTM * 10 + 15, 5, 5, TFT_WHITE);
         if(bt1.isClick() && menuPosTM > 0){
-            tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
+            tft.drawRect(15 + (scheduler.getTaskName(menuPosTM).length() * 6), menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
             menuPosTM--;
             //tft.fillScreen(0);
         }
         if(bt2.isClick() && menuPosTM <= taskCount){
-            tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
+            tft.drawRect(15 + (scheduler.getTaskName(menuPosTM).length() * 6), menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
             menuPosTM++;
                 //tft.fillScreen(0);
         }
