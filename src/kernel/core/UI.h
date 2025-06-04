@@ -27,8 +27,6 @@ private:
     int8_t menuPosUI = 0;
     int8_t menuPosTM = 0;
     uint8_t taskCount = 0;
-    String settingPar[setCnt] = {"System color"};
-    String ico[MenuItem] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
     String currentTask;
 public:
     static UserInterface* instance;
@@ -43,6 +41,7 @@ public:
     }
 
     void drawMenu() {
+        static String ico[MenuItem] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
         bt1.tick();
         bt2.tick();
  
@@ -66,7 +65,6 @@ public:
             }
         
         } else {
-            tft.fillScreen(TFT_BLACK);
             switch(menuPosUI){
                 case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
                         scheduler.endTask(scheduler.findIndexTask("User Interface"));
@@ -75,6 +73,7 @@ public:
                         scheduler.endTask(scheduler.findIndexTask("User Interface"));
                         break;
             }
+            tft.fillScreen(TFT_BLACK);
         }
     }
 
@@ -113,6 +112,7 @@ public:
 
     }
     void settings(){
+        static String settingPar[setCnt] = {"System color"};
         bt1.tick();
         bt2.tick();
         tft.setCursor(0, 0);
@@ -122,6 +122,10 @@ public:
             tft.fillScreen(TFT_BLACK);
             scheduler.addTask(UserInterface::userInterfaceWrapper, "User Interface");
             scheduler.endTask(scheduler.findIndexTask("Settings"));
+        }
+        for(int i = 0; i < sizeof(settingPar); i++){
+            tft.setCursor(0, i*10 + 11);
+            tft.print(settingPar[i]);
         }
     }
 };
