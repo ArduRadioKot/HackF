@@ -8,7 +8,8 @@
 
 #define BT1_PIN 21
 #define BT2_PIN 22
-
+#define MenuItem 7
+#define setCnt 5
 
 extern TFT_eSPI tft;
 extern TaskScheduler scheduler;
@@ -19,12 +20,13 @@ class UserInterface {
 
     static void taskManagerWrapper();
     static void userInterfaceWrapper();
+    static void settingsWrapper();
+
 private:
     bool bt_state = false;
     int8_t menuPosUI = 0;
     int8_t menuPosTM = 0;
     uint8_t taskCount = 0;
-    String ico[7] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
     String currentTask;
 public:
     static UserInterface* instance;
@@ -39,38 +41,40 @@ public:
     }
 
     void drawMenu() {
-        //tft.setCursor(0, 20);
-        //tft.print(menuPos);
+        static String ico[MenuItem] = {"Task Manager", "IR", "BLE", "WiFi", "Lora", "RFID", "Settings"};
         bt1.tick();
         bt2.tick();
-        if(bt1.isHolded()){
-            tft.fillScreen(TFT_BLACK);
-            switch(menuPosUI){
-                case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
-                        scheduler.endTask(scheduler.findIndexTask("User Interface"));
-                        break;
+ 
+        tft.drawRect(15 + (ico[menuPosUI].length() * 6), menuPosUI * 10 + 2, 5, 5, TFT_WHITE);
+            if(bt1.isClick() && menuPosUI > 0){
+                tft.drawRect(15 + (ico[menuPosUI].length() * 6), menuPosUI * 10 + 2, 5, 5, TFT_BLACK);
+                menuPosUI--;
             }
-        } else{
+            if(bt2.isClick() && menuPosUI <= MenuItem - 1){
+                tft.drawRect(15 + (ico[menuPosUI].length() * 6), menuPosUI * 10 + 2, 5, 5, TFT_BLACK);
+                menuPosUI++;
+            }
+            if(menuPosUI > MenuItem- 1 ){menuPosUI = MenuItem - 1;}
+            if(menuPosUI < 0){menuPosUI = 0;}
+        
+
+        if(!bt1.isHolded()){
             for(int i = 0; i <= sizeof(ico) - 1; i++){
                 tft.setCursor(0, i * 10);
                 tft.print(ico[i]);
             }
         
+        } else {
+            switch(menuPosUI){
+                case 0: scheduler.addTask(UserInterface::taskManagerWrapper, "Task Manager");
+                        scheduler.endTask(scheduler.findIndexTask("User Interface"));
+                        break;
+                case 6: scheduler.addTask(UserInterface::settingsWrapper, "Settings");
+                        scheduler.endTask(scheduler.findIndexTask("User Interface"));
+                        break;
+            }
+            tft.fillScreen(TFT_BLACK);
         }
-        // вроде как надо чинить 
-        tft.drawRect(225, menuPosUI * 10 + 2, 5, 5, TFT_WHITE);
-            if(bt1.isClick() && menuPosUI > 0){
-                tft.drawRect(225, menuPosUI * 10, 5, 5, TFT_BLACK);
-                menuPosUI--;
-                //tft.fillScreen(0);
-            }
-            if(bt2.isClick() && menuPosUI <= sizeof(ico) - 1){
-                tft.drawRect(225, menuPosUI * 10, 5, 5, TFT_BLACK);
-                menuPosUI++;
-                //tft.fillScreen(0);
-            }
-            if(menuPosUI > sizeof(ico)- 1 ){menuPosUI = sizeof(ico) - 1;}
-            if(menuPosUI < 0){menuPosUI = 0;}
     }
 
     void taskManager(){  // task manager
@@ -84,16 +88,14 @@ public:
             tft.setCursor(0, i*10 + 12);
             tft.print(scheduler.getTaskName(i));
         }
-        tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_WHITE);
+        tft.drawRect(15 + (scheduler.getTaskName(menuPosTM).length() * 6), menuPosTM * 10 + 15, 5, 5, TFT_WHITE);
         if(bt1.isClick() && menuPosTM > 0){
-            tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
+            tft.drawRect(15 + (scheduler.getTaskName(menuPosTM).length() * 6), menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
             menuPosTM--;
-            //tft.fillScreen(0);
         }
         if(bt2.isClick() && menuPosTM <= taskCount){
-            tft.drawRect(225, menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
+            tft.drawRect(15 + (scheduler.getTaskName(menuPosTM).length() * 6), menuPosTM * 10 + 15, 5, 5, TFT_BLACK);
             menuPosTM++;
-                //tft.fillScreen(0);
         }
         if(menuPosTM > taskCount - 1){menuPosTM = taskCount - 1;}
         if(menuPosTM < 0){menuPosTM = 0;}
@@ -109,6 +111,23 @@ public:
         }
 
     }
+    void settings(){
+        static String settingPar[setCnt] = {"System color"};
+        bt1.tick();
+        bt2.tick();
+        tft.setCursor(0, 0);
+        tft.println("Settings");
+        tft.drawFastHLine(0, 10, 240, TFT_WHITE);
+        if(bt1.isHolded()){
+            tft.fillScreen(TFT_BLACK);
+            scheduler.addTask(UserInterface::userInterfaceWrapper, "User Interface");
+            scheduler.endTask(scheduler.findIndexTask("Settings"));
+        }
+        for(int i = 0; i < sizeof(settingPar); i++){
+            tft.setCursor(0, i*10 + 11);
+            tft.print(settingPar[i]);
+        }
+    }
 };
 
 #endif
@@ -120,6 +139,10 @@ void UserInterface::taskManagerWrapper() {
 
 void UserInterface::userInterfaceWrapper(){
     if (instance) instance->drawMenu();
+}
+
+void UserInterface::settingsWrapper(){
+    if (instance) instance->settings();
 }
 
 //upd
